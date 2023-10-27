@@ -1,10 +1,10 @@
-﻿#All Hill's Audit Tasks
+﻿#All Hill's IT Audit Tasks
 #This script should cover all audit tasks that need documentation.
 #It is expandable for future needs.
 
 #Hill's Pet Nutrition
 #Nate Barrett/Benjamin Medina
-nate_barrett@hillspet.com
+#nate_barrett@hillspet.com
 #10/26/2023
 
 
@@ -15,7 +15,7 @@ $global:year = get-date -Format yyyy
 $global:task_complete_color = "Green"
 $global:task_error_color = "Red"
 
-#Choose Quarter for Audit
+#Choose Quarter of Audit
 write-host "Select the Quarter:
 1: Annual/Q1
 2: Q2
@@ -38,23 +38,20 @@ If (!(Test-Path $Path)) {New-Item -ItemType Directory -Path $Path -Force}
 #Audit Task Functions
 function Get-task9_2 {
 
-#Define Variables
+#DEFINE VARIABLES
 #Define the path to the OU containing the groups
 $coreOU = ",OU=United States,DC=us,DC=am,DC=win,DC=colpal,DC=com"
-#$messageText = "No empty groups were found.: $(Get-Date)"
 $facilityOU = $keywords
 $ouPath = "OU=Groups," + "OU=" + $facilityOU + $coreOU
-#$outFile = $path + "empty_groups.csv"
 $local_path = $Path + 'Task_9_2-empty_groups.csv'
+#$messageText = "No empty groups were found.: $(Get-Date)"
+#$outFile = $path + "empty_groups.csv"
 
-#Finding empty AD Groups
-
-#Delete old file
-
+#FINDING EMPTY AD GROUPS
 #Search Active Directory for OU's
 $middleous = Get-ADOrganizationalUnit -LDAPFilter '(name=*)' -SearchBase $ouPath -SearchScope OneLevel
 
-#Remove CSV file before population
+#Remove CSV file before new population
 if (Test-Path -Path $local_path -PathType Leaf) {
     try{
         Remove-Item -Path $local_path
@@ -64,10 +61,11 @@ if (Test-Path -Path $local_path -PathType Leaf) {
         throw $_.Exception.Message
     }
 }
-#Add date to top of CSV File
+
+#Add date to the top of CSV File
 Get-Date | Out-File -FilePath $local_path
 
-#Loop through each ADGroup in the list
+#Loop through each AD Group in the list
 foreach ($middleou in $middleous) {
     $middleou | Select-Object Name | Out-File -FilePath $local_path -Append
     Get-ADGroup -Filter * -SearchBase $middleou -Properties Members | Where-Object {-not $_.members} | Select-Object Name | Out-File -FilePath $local_path -Append  
@@ -81,24 +79,25 @@ function Get-task9_1 {
 
 #Define local path
 $local_path = $Path + 'task9_1IDs.txt'
+$user_search = '*' + $keywords + '*'
 
-# Define the path to the OU containing the groups
+#Define the path to the OU containing the groups
 $ouPath = "DC=us,DC=am,DC=win,DC=colpal,DC=com"
 
-# Search Active Directory for enabled users whose names contain the keywords
-$users = Get-ADUser -Filter {Name -like '*USEP*' -and Enabled -eq $true} -SearchBase $ouPath
+#Search Active Directory for enabled users whose names contain the keywords
+$users = Get-ADUser -LDAPFilter "(&(name=$user_search)(!(userAccountControl:1.2.840.113556.1.4.803:=2)))" -SearchBase $ouPath
 
-# Loop through each user in the list
+#Loop through each user in the list
 foreach ($user in $users) {
-    # Add the user's name to the text file
+    #Add the user's name to the text file
     Add-Content -Path $local_path  -Value $user.Name
     Write-Host "Added user $($user.Name) to the text file"
 }
 
-# Clear variable
+#Clear variable
 Clear-Variable -name users
 
-#task completed statement
+#Task completed statement
 Write-host "Task 9.1 completed.`n" -ForegroundColor $task_complete_color
 }
 
@@ -130,7 +129,7 @@ $results | Export-csv $local_path -NoTypeInformation
 Write-host "Task 9.3 completed.`n" -ForegroundColor $task_complete_color
 }
 
-#Function to runn all tasks instead of just 1 at a time.
+#Function to run all tasks instead of just 1 at a time.
 function Run_all {
 Get-task9_1
 Get-task9_2
@@ -156,6 +155,7 @@ write-host "Select the number of the task you would like to run:
 8: 
 9:  Run All
 10: Exit script."
+
 $userChoice = read-host -Prompt " "
 switch($userChoice)
 {
