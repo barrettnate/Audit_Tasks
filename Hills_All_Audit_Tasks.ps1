@@ -1,4 +1,4 @@
-﻿#All Hill's IT Audit Tasks
+﻿2#All Hill's IT Audit Tasks
 #This script should cover all audit tasks that need documentation.
 #It is expandable for future needs.
 
@@ -113,7 +113,7 @@ $ServerAdminsU = $keywords + '_ServerAdminsU'
 $SiteAdmins = $keywords + '_SiteAdmins'
 $SiteAdminsDL = $keywords + '_SiteAdminsDL'
 $SiteAdminsU = $keywords + '_SiteAdminsU'
-$local_path = $Path + 'group_members.csv'
+$local_path = $Path + 'Task_9_3-group_members.csv'
 
 $groups = $PCAdmin, $PCAdminDL, $ServerAdmins, $ServerAdminsDL, $ServerAdminsU, $SiteAdmins, $SiteAdminsDL, $SiteAdminsU
 
