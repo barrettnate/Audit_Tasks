@@ -78,27 +78,23 @@ function Get-task9_1 {
 
 
 #Define local path
-$local_path = $Path + 'task9_1IDs.txt'
-$user_search = '*' + $keywords + '*'
+$local_path = $Path + $keywords + '-Task_9_1.csv'
+
+#Define the LDAP filter for EmployeeNumber starting with 'O'
+$ldapFilter = "(&(objectCategory=person)(objectClass=user)(employeeNumber=O*))"
 
 #Define the path to the OU containing the groups
-$ouPath = "DC=us,DC=am,DC=win,DC=colpal,DC=com"
+$ouPath = "OU=" + $keywords + ",OU=United States,DC=us,DC=am,DC=win,DC=colpal,DC=com"
 
 #Search Active Directory for enabled users whose names contain the keywords
-$users = Get-ADUser -LDAPFilter "(&(name=$user_search)(!(userAccountControl:1.2.840.113556.1.4.803:=2)))" -SearchBase $ouPath
-
-#Loop through each user in the list
-foreach ($user in $users) {
-    #Add the user's name to the text file
-    Add-Content -Path $local_path  -Value $user.Name
-    Write-Host "Added user $($user.Name) to the text file"
-}
+$users = Get-ADUser -LDAPFilter $ldapFilter -Properties EmployeeNumber  -SearchBase $ouPath | Select-Object Name, EmployeeNumber | Export-Csv -Path $local_path -NoTypeInformation
 
 #Clear variable
 Clear-Variable -name users
 
 #Task completed statement
 Write-host "Task 9.1 completed.`n" -ForegroundColor $task_complete_color
+Write-host "Exported to:" $local_path `n -ForegroundColor $task_complete_color
 }
 
 function Get-task9_3{
