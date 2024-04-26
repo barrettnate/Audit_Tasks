@@ -31,7 +31,7 @@ switch($userChoice)
 }
 
 #Create Folder Structure - Change this if you want output stored elsewhere.
-$global:Path = "O:\My Drive\Audit Evidence\$keywords\$year\$quarter\"
+$global:Path = "O:\My Drive\Audit\Audit Evidence\$keywords\$year\$quarter\"
 If (!(Test-Path $Path)) {New-Item -ItemType Directory -Path $Path -Force}
 
 
